@@ -4,6 +4,7 @@ function App() {
   const [calcInput, setCalcInput] = useState("");
   const [total, setTotal] = useState("");
   const [history, setHistory] = useState([]);
+  const [showMenu, setShowMenu] = useState(false);
 
   function handleButton(value) {
     if (value === "AC") return handleReset();
@@ -32,6 +33,12 @@ function App() {
     setCalcInput((input) => input + value);
   }
 
+  function handleSelect(value) {
+    setCalcInput(value.calcInput);
+    setTotal(value.total);
+    setShowMenu(false);
+  }
+
   function handleReset() {
     setCalcInput("");
     setTotal("");
@@ -41,11 +48,16 @@ function App() {
     <div className="h-screen max-w-[300px] flex justify-center items-center mx-auto">
       <div className="w-full p3 border rounded-2xl relative">
         <div className="p-7 absolute h-full w-full">
-          <Menu history={history} />
+          <Menu
+            history={history}
+            showMenu={showMenu}
+            onShowMenu={() => setShowMenu(!showMenu)}
+            onSelect={handleSelect}
+          />
         </div>
         <div className="h-1/3 flex flex-col justify-end items-end p-7">
           <p className="text-2xl/9">{calcInput || "\u00a0"}</p>
-          <p className="text-5xl font-bold">{total}</p>
+          <p className="text-5xl font-bold">{total || "\u00a0"}</p>
         </div>
         <div className="h-2/3 px-7 pb-7 relative">
           <KeyPad onClick={handleButton} />
@@ -55,12 +67,10 @@ function App() {
   );
 }
 
-function Menu({ history }) {
-  const [showMenu, setShowMenu] = useState(false);
-
+function Menu({ history, showMenu, onShowMenu, onSelect }) {
   return (
     <div>
-      <Button onClick={() => setShowMenu(!showMenu)}>
+      <Button onClick={onShowMenu}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -84,7 +94,11 @@ function Menu({ history }) {
           ) : (
             <>
               {history.map((item) => (
-                <div className="border-b" key={item.id}>
+                <div
+                  className="border-b cursor-pointer"
+                  key={item.id}
+                  onClick={() => onSelect(item)}
+                >
                   <p>{item.calcInput}</p>
                   <h6 className="font-bold text-lg -mt-2">{item.total}</h6>
                 </div>
