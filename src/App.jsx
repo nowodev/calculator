@@ -88,7 +88,7 @@ function Menu({ history, showMenu, onShowMenu, onSelect }) {
       </Button>
 
       {showMenu && (
-        <div className="w-full absolute h-72 bg-white border-t p-7 rounded-t-xl bottom-0 left-0 z-50 outline overflow-y-scroll">
+        <div className="w-full absolute max-h-72 bg-white border-t p-7 rounded-xl bottom-0 left-0 z-50 outline overflow-y-auto">
           {history.length === 0 ? (
             "Nothing to see here"
           ) : (
