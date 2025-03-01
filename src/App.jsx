@@ -3,16 +3,28 @@ import { useState } from "react";
 function App() {
   const [calcInput, setCalcInput] = useState("");
   const [total, setTotal] = useState("");
+  const [history, setHistory] = useState([]);
 
   function handleButton(value) {
     if (value === "AC") return handleReset();
 
     if (value === "=") {
-      let calcValue = eval(calcInput);
-      Number.isInteger(calcValue)
-        ? calcValue
-        : (calcValue = Number(calcValue).toFixed(2));
-      return setTotal(calcValue);
+      try {
+        const calcValue = eval(calcInput);
+        const formattedValue = Number.isInteger(calcValue)
+          ? calcValue
+          : Number(calcValue).toFixed(2);
+
+        setHistory((prevHistory) => [
+          ...prevHistory,
+          { id: crypto.randomUUID(), calcInput, total: formattedValue },
+        ]);
+
+        return setTotal(formattedValue);
+      } catch (error) {
+        handleReset();
+        console.error("Calculation error:", error);
+      }
     }
 
     if (total) handleReset();
@@ -27,15 +39,60 @@ function App() {
 
   return (
     <div className="h-screen max-w-[300px] flex justify-center items-center mx-auto">
-      <div className="w-full p-3 border rounded-2xl">
-        <div className="h-1/3 flex flex-col justify-end items-end p-4">
+      <div className="w-full p3 border rounded-2xl relative">
+        <div className="p-7 absolute h-full w-full">
+          <Menu history={history} />
+        </div>
+        <div className="h-1/3 flex flex-col justify-end items-end p-7">
           <p className="text-2xl/9">{calcInput || "\u00a0"}</p>
           <p className="text-5xl font-bold">{total}</p>
         </div>
-        <div className="h-2/3 p-4">
+        <div className="h-2/3 px-7 pb-7 relative">
           <KeyPad onClick={handleButton} />
         </div>
       </div>
+    </div>
+  );
+}
+
+function Menu({ history }) {
+  const [showMenu, setShowMenu] = useState(false);
+
+  return (
+    <div>
+      <Button onClick={() => setShowMenu(!showMenu)}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          className="size-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+      </Button>
+
+      {showMenu && (
+        <div className="w-full absolute bg-white border-t p-7 rounded-t-xl bottom-0 left-0 z-50">
+          {history.length === 0 ? (
+            "Nothing to see here"
+          ) : (
+            <>
+              {history.map((item) => (
+                <div className="border-b" key={item.id}>
+                  <p>{item.calcInput}</p>
+                  <h6 className="font-bold text-lg -mt-2">{item.total}</h6>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -69,23 +126,23 @@ function KeyPad({ onClick }) {
         <Button
           onClick={onClick}
           value={key.value}
-          text={key.name}
+          styles={key.name === "0" ? "col-span-2" : ""}
           key={key.name}
-        />
+        >
+          {key.name}
+        </Button>
       ))}
     </div>
   );
 }
 
-function Button({ value, text, onClick }) {
+function Button({ value, styles, onClick, children }) {
   return (
     <button
-      className={`bg-black p-3 rounded-xl text-white font-medium cursor-pointer ${
-        text === "0" ? "col-span-2" : ""
-      } `}
+      className={`bg-black p-3 rounded-xl text-white font-medium cursor-pointer ${styles}`}
       onClick={() => onClick(value)}
     >
-      {text}
+      {children}
     </button>
   );
 }
