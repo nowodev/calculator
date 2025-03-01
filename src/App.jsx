@@ -71,24 +71,41 @@ function Menu({ history, showMenu, onShowMenu, onSelect }) {
   return (
     <div>
       <Button onClick={onShowMenu}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="size-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-          />
-        </svg>
+        {!showMenu ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18 18 6M6 6l12 12"
+            />
+          </svg>
+        )}
       </Button>
 
       {showMenu && (
-        <div className="w-full absolute max-h-72 bg-white border-t p-7 rounded-xl bottom-0 left-0 z-50 outline overflow-y-auto">
+        <div className="w-full absolute max-h-72 bg-white outline p-7 rounded-xl bottom-0 left-0 z-50 overflow-y-auto">
           {history.length === 0 ? (
             "Nothing to see here"
           ) : (
